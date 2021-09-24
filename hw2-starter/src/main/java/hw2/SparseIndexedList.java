@@ -26,11 +26,10 @@ public class SparseIndexedList<T> implements IndexedList<T> {
    * @throws LengthException if size <= 0.
    */
   public SparseIndexedList(int size, T defaultValue) throws LengthException {
-    // TODO
     if (size <= 0) {
       throw new LengthException();
     }
-    head = null; //?? TODO: type?
+    head = null; // a pointer
     def = defaultValue;
     length = size;
   }
@@ -40,6 +39,9 @@ public class SparseIndexedList<T> implements IndexedList<T> {
     return length;
   }
 
+  // Find the Node at a given index.
+  // Returns the node if it exist. Otherwise return null.
+  // Throws IndexException when index < 0 or index >= length.
   private Node<T> find(int index) throws IndexException {
     if (index < 0 || index >= length()) {
       throw new IndexException();
@@ -51,16 +53,16 @@ public class SparseIndexedList<T> implements IndexedList<T> {
       }
       node = node.next;
     }
-    return null; // empty list and default value
+    return null; // Empty list OR not found
   }
 
-  // add node according to ascending order of the index
+  // Add node based on ascending order of the index
   private void add(int index, T value) {
     Node<T> nodeAdd = new Node<T>(index, value);
     Node<T> nodePrev = head;
-    if (nodePrev == null) { // when empty
+    if (nodePrev == null) { // when empty, add on head
       head = nodeAdd;
-    } else {
+    } else { // have at least one node
       while (nodePrev.next != null && index > nodePrev.next.index) {
         nodePrev = nodePrev.next;
       }
@@ -74,13 +76,12 @@ public class SparseIndexedList<T> implements IndexedList<T> {
     }
   }
 
-  // remove node of given index
-  // Pre-condition: There must be something that can be removed.
-  // head can't be null.
+  // Remove node of given index
+  // Pre-condition: There must be something that can be removed, ie. head can't be null.
   // If there's only one node, that one node is the only one to be removed.
   private void remove(int index) {
     Node<T> nodePrev = head;
-    if (nodePrev.index == index) { // only one node, node.next is null
+    if (nodePrev.index == index) { // only one node
       head = head.next;
     } else {
       while (nodePrev.next.index != index) {
@@ -103,14 +104,14 @@ public class SparseIndexedList<T> implements IndexedList<T> {
   public void put(int index, T value) throws IndexException {
     // TODO
     Node<T> nodeResult = find(index);
-    if (nodeResult == null) { // new node potentially needed
-      if (value != def) { // if value to be put in is not default - add node
+    if (nodeResult == null) { // node does not exit
+      if (value != def) {
         add(index, value);
       } // if value to be put in is default - do nothing
-    } else { // an node at index already exist
-      if (value != def) { // if value to be put in is not default - update the data of that node
+    } else { // node already exit
+      if (value != def) {
         nodeResult.data = value;
-      } else { // if value to be put in is default - remove that node
+      } else {
         remove(index);
       }
     }
@@ -134,37 +135,38 @@ public class SparseIndexedList<T> implements IndexedList<T> {
   }
 
   private class SparseIndexedListIterator implements Iterator<T> {
-    //private Node<T> nodeHead = head; //?? make it outside and private
-    private Node<T> nodeCur = head;
-
+    private Node<T> nodeCur;
     private int indexCur;
     private int indexNext;
 
-    SparseIndexedListIterator() {
+    SparseIndexedListIterator() { // O(1) ver
+      nodeCur = head;
+      indexCur = 0;
+      indexNext = 0;
     }
 
     @Override
-    public boolean hasNext() {
-      return indexCur < length(); // TODO
+    public boolean hasNext() { // O(1) ver
+      return indexCur < length();
     }
 
     @Override
-    public T next() throws NoSuchElementException {
+    public T next() throws NoSuchElementException { // O(1) ver
       if (!hasNext()) {
         throw new NoSuchElementException();
       }
-      if (nodeCur == null) { // head == null
+      if (nodeCur == null) { // head == null OR no element afterwards
         indexCur++;
         return def;
-      } else { // nodeCur != null, at least one element
+      } else { // at least one element afterwards
         indexNext = nodeCur.index;
         if (indexCur < indexNext) {
           indexCur++;
           return def;
-        } else { // indexCur == indexNext
+        } else { // indexCur == indexNext, return data in Node
           T data = nodeCur.data;
           indexCur++;
-          nodeCur = nodeCur.next; // could be null - back to line 156 - seems to be handled
+          nodeCur = nodeCur.next;
           return data;
         }
       }
