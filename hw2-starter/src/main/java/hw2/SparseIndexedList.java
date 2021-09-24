@@ -54,25 +54,33 @@ public class SparseIndexedList<T> implements IndexedList<T> {
     return null; // empty list and default value
   }
 
-  // add node at the last position of linked list
-  private void addLast(int index, T value) {
+  // add node according to ascending order of the index
+  private void add(int index, T value) {
     Node<T> nodeAdd = new Node<T>(index, value);
-    Node<T> nodeLast = head;
-    if (nodeLast == null) {
+    Node<T> nodePrev = head;
+    if (nodePrev == null) { // when empty
       head = nodeAdd;
     } else {
-      while (nodeLast.next != null) {
-        nodeLast = nodeLast.next;
+      while (nodePrev.next != null && index > nodePrev.next.index) {
+        nodePrev = nodePrev.next;
       }
-      nodeLast.next = nodeAdd;
-      nodeLast.next = nodeAdd;
+      if (index < nodePrev.index) { // add before - between head and first node
+        nodeAdd.next = head;
+        head = nodeAdd;
+      } else { // add after
+        nodeAdd.next = nodePrev.next;
+        nodePrev.next = nodeAdd;
+      }
     }
   }
 
   // remove node of given index
+  // Pre-condition: There must be something that can be removed.
+  // head can't be null.
+  // If there's only one node, that one node is the only one to be removed.
   private void remove(int index) {
     Node<T> nodePrev = head;
-    if (nodePrev.index == index) {
+    if (nodePrev.index == index) { // only one node, node.next is null
       head = head.next;
     } else {
       while (nodePrev.next.index != index) {
@@ -97,7 +105,7 @@ public class SparseIndexedList<T> implements IndexedList<T> {
     Node<T> nodeResult = find(index);
     if (nodeResult == null) { // new node potentially needed
       if (value != def) { // if value to be put in is not default - add node
-        addLast(index, value);
+        add(index, value);
       } // if value to be put in is default - do nothing
     } else { // an node at index already exist
       if (value != def) { // if value to be put in is not default - update the data of that node
@@ -126,24 +134,18 @@ public class SparseIndexedList<T> implements IndexedList<T> {
   }
 
   private class SparseIndexedListIterator implements Iterator<T> {
-    private T[] dataArr = (T[]) new Object[length()];
-    private int arrIndex; // TODO: index
+    //private Node<T> nodeHead = head; //?? make it outside and private
+    private Node<T> nodeCur = head;
+
+    private int indexCur;
+    private int indexNext;
 
     SparseIndexedListIterator() {
-      for (int i = 0; i < length; i++) {
-        dataArr[i] = def;
-      }
-      Node<T> nodeChange = head;
-      while (nodeChange != null) {
-        dataArr[nodeChange.index] = nodeChange.data;
-        nodeChange = nodeChange.next;
-      }
-      arrIndex = 0;
     }
 
     @Override
     public boolean hasNext() {
-      return arrIndex < length();
+      return indexCur < length(); // TODO
     }
 
     @Override
@@ -151,8 +153,21 @@ public class SparseIndexedList<T> implements IndexedList<T> {
       if (!hasNext()) {
         throw new NoSuchElementException();
       }
-      T t = dataArr[arrIndex++];
-      return t;
+      if (nodeCur == null) { // head == null
+        indexCur++;
+        return def;
+      } else { // nodeCur != null, at least one element
+        indexNext = nodeCur.index;
+        if (indexCur < indexNext) {
+          indexCur++;
+          return def;
+        } else { // indexCur == indexNext
+          T data = nodeCur.data;
+          indexCur++;
+          nodeCur = nodeCur.next; // could be null - back to line 156 - seems to be handled
+          return data;
+        }
+      }
     }
   }
 }
