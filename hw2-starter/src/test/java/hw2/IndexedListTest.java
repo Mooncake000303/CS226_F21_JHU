@@ -32,8 +32,6 @@ public abstract class IndexedListTest {
    * To find these tests, see tests whose names end with CheckLength.
    */
 
-  //?? TODO: Empty / special cases in general
-
   // test constructor
   @Test
   @DisplayName("The constructor SparseIndexedList() throws LengthException if index is below valid range (<= 0).")
@@ -84,7 +82,6 @@ public abstract class IndexedListTest {
     }
   }
 
-
   // test put - Exception
   @Test
   @DisplayName("put() throws exception if index is below the valid range.")
@@ -106,6 +103,15 @@ public abstract class IndexedListTest {
     } catch (IndexException ex) {
       return;
     }
+  }
+
+  @Test
+  @DisplayName("put() should correctly put value at starting and ending edges. ")
+  void testPutUsingGetEdgeCases() { // Note: NOT A UNIT TEST!
+    indexedList.put(0, 42); // edge - start
+    assertEquals(42, indexedList.get(0));
+    indexedList.put(9, 43); // edge - end
+    assertEquals(43, indexedList.get(9));
   }
 
   // test put - Add Node: To-be-put value is non-default and Node at index did NOT exist before.
@@ -136,6 +142,7 @@ public abstract class IndexedListTest {
   void testPutAddNodeCheckLength() {
     indexedList.put(3, 24);
     assertEquals(LENGTH, indexedList.length());
+
   }
 
   // test put - Do Nothing: To-be-put value is default and Node at index did NOT exist before.
@@ -217,7 +224,7 @@ public abstract class IndexedListTest {
   }
 
   @Test
-  @DisplayName("put() adds a new node when to-be-put value is non-default and Node at index did not exist before. " +
+  @DisplayName("put() remove the node when To-be-put value is default and Node at index DID exist before. " +
           "Length should not change.")
   void testPutRemoveNodeCheckLength() {
     indexedList.put(3, 24);
@@ -225,20 +232,16 @@ public abstract class IndexedListTest {
     assertEquals(LENGTH, indexedList.length());
   }
 
-
-  //?? TODO: testHasNext on empty collection / 1 item? (all below)
-
   // test hasNext
   @Test
   @DisplayName("hasNext() should return true just after construction. ")
-  void testHasNextAfterConstruction() { //?? the first HasNextTest
+  void testHasNextAfterConstruction() { // A not-very-meaningful hasNext() test, but the only possible unit test
     Iterator<Integer> it = indexedList.iterator();
     assertEquals(true, it.hasNext());
   }
 
-  /* Note:
-   * in two tests below, unit tests for hasNext() are not possible
-   * because we need to call next() to move iterator to next iterator.
+  /* Note: in two tests below, unit tests for hasNext() are not possible
+   * because we have to call next() to move iterator to next iterator.
    */
   @Test
   @DisplayName("hasNext() should return false when trying to do hasNext at the end of the list. ")
@@ -265,7 +268,6 @@ public abstract class IndexedListTest {
     }
     assertEquals(LENGTH, counter);
   }
-
 
   // test Next
   @Test
@@ -327,6 +329,38 @@ public abstract class IndexedListTest {
     }
   }
 
-  // TODO Add more tests!
+  /* Below is a "Complex" but not necessarily comprehensive test.
+  * It integrates put, get and iterator in this test and it's purpose is NOT a unit test. */
+  @Test
+  @DisplayName("Complex test that involves put, get, and iterator.")
+  void testAllComplex() {
+    for (int i = 0; i < LENGTH; i += 2) { // put i*i at index i when i is even
+      indexedList.put(i, i * i);
+    }
+    for(int i = 0; i < LENGTH; i++) { // test get
+      if (i % 2 == 0) {
+        assertEquals(i * i, indexedList.get(i));
+      } else {
+        assertEquals(INITIAL, indexedList.get(i));
+      }
+    }
 
+    for(int i = 0; i < LENGTH; i++) { // should remove all nodes
+      indexedList.put(i, INITIAL);
+    }
+    indexedList.put(0, 24);
+    indexedList.put(9, 42); // add 2 nodes
+
+    for(int i = 1; i < LENGTH - 1; i++) {
+      assertEquals(INITIAL, indexedList.get(i));
+    }
+    assertEquals(24, indexedList.get(0));
+    assertEquals(42, indexedList.get(9));
+
+    int index = 0;
+    for(int elements: indexedList) { // iterator
+      assertEquals(indexedList.get(index), elements);
+      index++;
+    }
+  }
 }
