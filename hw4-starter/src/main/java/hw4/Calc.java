@@ -24,7 +24,7 @@ public final class Calc {
       stack.top();
       flag = true;
     } catch (EmptyException ex) {
-      System.out.println("ERROR CODE: The stack contains less operand than needed."); // empty stack and < 2 operands
+      System.out.println("ERROR: The stack contains less operand than needed."); // empty stack and < 2 operands
     }
     return flag;
   }
@@ -33,7 +33,7 @@ public final class Calc {
   // Deal with div and mod, guarded by div-by-zero
   private static void divCheckZero(int op1, int op2, String input, LinkedStack<Integer> stack) {
     if (op2 == 0) {
-      System.out.println("ERROR CODE: cannot divide by zero");
+      System.out.println("ERROR: cannot divide by zero");
       stack.push(op1); // push back
       stack.push(op2);
     } else {
@@ -74,7 +74,7 @@ public final class Calc {
     } else {
       if (guardedTop(stack)) {
         System.out.println(stack.top());
-      } // else: empty stack, do nothing (ERROR CODE: operand less than needed)
+      } // else: empty stack, do nothing (ERROR: operand less than needed)
     }
   }
 
@@ -93,9 +93,9 @@ public final class Calc {
         stack.pop();
         doActualCalculation(op1, op2, input, stack);
       } else { // op2 yes, op1 no
-        stack.push(op2); // push back op2 (ERROR CODE: operand less than needed)
+        stack.push(op2); // push back op2 (ERROR: operand less than needed)
       }
-    } // op2 no, op1 no, do nothing (ERROR CODE: operand less than needed)
+    } // op2 no, op1 no, do nothing (ERROR: operand less than needed)
   }
 
   private static void doInteger(String input, LinkedStack<Integer> stack) {
@@ -103,7 +103,7 @@ public final class Calc {
       int num = Integer.parseInt(input);
       stack.push(num);
     } catch (NumberFormatException ex) {
-      System.out.println("ERROR CODE: bad token"); // not an integer & all other invalid inputs
+      System.out.println("ERROR: bad token"); // not an integer & all other invalid inputs
     }
   }
 

@@ -8,7 +8,7 @@
 
 When tokens other than valid ones (`? . ! + - * / % <Integer>`)
 are put in, such as `1.0`(doubles), `blah`(words), `.@.!?`(nonsense characters), etc,
-the program will skip the invalid tokens with an `ERROR CODE: bad token`.
+the program will skip the invalid tokens with an `ERROR: bad token`.
 The program will continue to read in other valid tokens.
 
 Test example
@@ -19,8 +19,8 @@ Input
 
 Output
 ```
-ERROR CODE: bad token
-ERROR CODE: bad token
+ERROR: bad token
+ERROR: bad token
 [1, 2, 3]
 ```
 
@@ -29,7 +29,7 @@ ERROR CODE: bad token
 
 When the special command `.` is called while the stack is empty, EmptyException
 would be thrown, but in this case, to avoid termination with exception,
-it is caught and handled with an`ERROR CODE: The stack contains less operand than needed.`
+it is caught and handled with an`ERROR: The stack contains less operand than needed.`
 because `.` needs 1 operand but there's only 0.
 The program will continue to read in other valid tokens.
 
@@ -41,7 +41,7 @@ Input
 
 Output
 ```
-ERROR CODE: The stack contains less operand than needed.
+ERROR: The stack contains less operand than needed.
 []
 ```
 
@@ -51,7 +51,7 @@ When the one of the binary operator `+ - * / %` is called
 but there is less than (<) 2 operands left on the stack, 
 EmptyException would be  thrown potentially during the process.
 But in this case, to avoid termination with exception,
-it is caught and handled with an`ERROR CODE: The stack contains less operand than needed.`
+it is caught and handled with an`ERROR: The stack contains less operand than needed.`
 because binary operator (`+ - * / %`) needs 2 operands but there's less than (<) 2.
 The stack will be kept the same as before the operator input, and no actual operations are done.
 The program will continue to read in other valid tokens.
@@ -67,7 +67,7 @@ Output
 [4]
 [4, -2]
 [-8]
-ERROR CODE: The stack contains less operand than needed.
+ERROR: The stack contains less operand than needed.
 [-8]
 ```
 
@@ -77,7 +77,7 @@ When a `/` is called with sufficient (2) operands, there would be a case that th
 second operand（divisor）is 0，and division by zero will throw an ArithmeticException.
 But in this case, to avoid termination with exception, instead of catching ArithmeticException,
 division by zero will be detected before the division actually happens, and handled with 
-`ERROR CODE: cannot divide by zero`. The stack will be kept the same as before the `/` input, 
+`ERROR: cannot divide by zero`. The stack will be kept the same as before the `/` input, 
 and no actual operations are done.
 The program will continue to read in other valid tokens.
 
@@ -90,7 +90,7 @@ Input
 Output
 ```
 [27]
-ERROR CODE: cannot divide by zero
+ERROR: cannot divide by zero
 [27, 5, 0]
 [27, 5]
 [22]
@@ -102,7 +102,7 @@ When a `%` is called with sufficient (2) operands, there would be a case that th
 second operand（divisor）is 0，and division by zero will throw an ArithmeticException.
 But in this case, to avoid termination with exception, instead of catching ArithmeticException,
 division by zero will be detected before the division actually happens, and handled with
-`ERROR CODE: cannot divide by zero`. The stack will be kept the same as before the `%` input,
+`ERROR: cannot divide by zero`. The stack will be kept the same as before the `%` input,
 and no actual operations are done.
 The program will continue to read in other valid tokens.
 
@@ -115,7 +115,7 @@ Input
 Output
 ```
 [126]
-ERROR CODE: cannot divide by zero
+ERROR: cannot divide by zero
 [126, 0]
 [121]
 ```
